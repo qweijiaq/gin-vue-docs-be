@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"gvd_server/core"
 	"gvd_server/global"
 	"gvd_server/routers"
@@ -13,8 +12,7 @@ func main() {
 	global.DB = core.InitMysql()
 	global.Redis = core.InitRedis(0)
 
-	val, err := global.Redis.Get("name").Result()
-	fmt.Println(val, err)
+	// option := flags.Parse()
 
 	router := routers.Routers()
 	addr := global.Config.System.Addr()
