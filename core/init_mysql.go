@@ -34,7 +34,7 @@ func InitMysql() *gorm.DB {
 		DisableForeignKeyConstraintWhenMigrating: true,
 	})
 	if err != nil {
-		logrus.Fatalf(fmt.Sprintf("[%s] MySQL 连接失败, err: %s", dsn, err.Error()))
+		logrus.Fatalf(fmt.Sprintf("[%s] MySQL 连接失败, error: %s", dsn, err.Error()))
 	}
 	sqlDB, _ := db.DB()
 	sqlDB.SetMaxIdleConns(10)               // 最大空闲连接数
