@@ -9,6 +9,7 @@ import (
 func main() {
 	global.Log = core.InitLogger()
 	global.Config = core.InitConfig()
+	global.DB = core.InitMysql()
 
 	router := routers.Routers()
 	addr := global.Config.System.Addr()
