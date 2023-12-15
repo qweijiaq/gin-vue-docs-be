@@ -14,3 +14,11 @@ type Pagination struct {
 	Key   string `json:"key" form:"key"`
 	Sort  string `json:"sort" form:"sort"`
 }
+
+type IDListRequest struct {
+	IDList []uint `json:"idList" form:"idList" binding:"required" label:"id列表"`
+}
+
+type IDRequest struct {
+	ID uint `json:"id" form:"id" uri:"id"`
+}
