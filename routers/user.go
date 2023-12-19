@@ -16,4 +16,5 @@ func (router RouterGroup) UserRouter() {
 	router.GET("logout", middleware.JwtAuth(), app.UserLogoutView)                 // 用户注销
 	router.GET("user_info", middleware.JwtAuth(), app.UserInfoView)                // 用户详情信息
 	router.PUT("user _password", middleware.JwtAuth(), app.UserUpdatePasswordView) // 用户修改密码
+	router.PUT("user_info", middleware.JwtAuth(), app.UserUpdateInfoView)          // 用户修改信息
 }
