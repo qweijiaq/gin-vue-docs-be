@@ -12,7 +12,7 @@ import (
 // UserLogoutView 用户注销
 // @Tags 用户管理
 // @Summary 用户注销
-// @Description 用户注销
+// @Description 注销的登录
 // @Param token header string true "token"
 // @Router /api/logout [get]
 // @Produce json

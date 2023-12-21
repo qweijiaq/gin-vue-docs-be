@@ -16,7 +16,7 @@ type UserUpdatePasswordRequest struct {
 // UserUpdatePasswordView 用户修改密码
 // @Tags 用户管理
 // @Summary 用户修改密码
-// @Description 用户修改密码
+// @Description 用户修改个人账号的密码
 // @Param token header string true "token"
 // @Param data body UserUpdatePasswordRequest true "参数"
 // @Router /api/user_password [put]

@@ -17,7 +17,7 @@ const docTemplate = `{
     "paths": {
         "/api/login": {
             "post": {
-                "description": "用户登录",
+                "description": "用户登录，采用 JWT 方式",
                 "produces": [
                     "application/json"
                 ],
@@ -48,7 +48,7 @@ const docTemplate = `{
         },
         "/api/logout": {
             "get": {
-                "description": "用户注销",
+                "description": "注销的登录",
                 "produces": [
                     "application/json"
                 ],
@@ -77,7 +77,7 @@ const docTemplate = `{
         },
         "/api/user_info": {
             "get": {
-                "description": "用户信息",
+                "description": "获取用户的一些详细信息",
                 "produces": [
                     "application/json"
                 ],
@@ -116,14 +116,14 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "用户更新自己的信息",
+                "description": "用户自己更新个人的一些信息",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "用户管理"
                 ],
-                "summary": "用户更新自己的信息",
+                "summary": "用户更新个人信息",
                 "parameters": [
                     {
                         "type": "string",
@@ -154,7 +154,7 @@ const docTemplate = `{
         },
         "/api/user_password": {
             "put": {
-                "description": "用户修改密码",
+                "description": "用户修改个人账号的密码",
                 "produces": [
                     "application/json"
                 ],
@@ -192,7 +192,7 @@ const docTemplate = `{
         },
         "/api/users": {
             "get": {
-                "description": "用户列表",
+                "description": "获取用户列表",
                 "produces": [
                     "application/json"
                 ],
@@ -256,7 +256,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "管理员更新用户信息",
+                "description": "管理员更新用户的一些信息",
                 "produces": [
                     "application/json"
                 ],
@@ -328,7 +328,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "删除用户",
+                "description": "从数据库中删除用户",
                 "produces": [
                     "application/json"
                 ],

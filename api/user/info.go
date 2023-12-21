@@ -17,7 +17,7 @@ type UserInfoResponse struct {
 // UserInfoView 用户信息
 // @Tags 用户管理
 // @Summary 用户信息
-// @Description 用户信息
+// @Description 获取用户的一些详细信息
 // @Param token header string true "token"
 // @Router /api/user_info [get]
 // @Produce json

@@ -13,7 +13,7 @@ import (
 // UserRemoveView 删除用户
 // @Tags 用户管理
 // @Summary 删除用户
-// @Description 删除用户
+// @Description 从数据库中删除用户
 // @Param token header string true "token"
 // @Router /api/users [delete]
 // @Produce json

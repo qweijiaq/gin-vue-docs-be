@@ -15,7 +15,7 @@ type UserListRequest struct {
 // UserListView 用户列表
 // @Tags 用户管理
 // @Summary 用户列表
-// @Description 用户列表
+// @Description 获取用户列表
 // @Param data query UserListRequest true "参数"
 // @Param token header string true "token"
 // @Router /api/users [get]

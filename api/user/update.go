@@ -18,7 +18,7 @@ type UserUpdateRequest struct {
 // UserUpdateView 管理员更新用户信息
 // @Tags 用户管理
 // @Summary 管理员更新用户信息
-// @Description 管理员更新用户信息
+// @Description 管理员更新用户的一些信息
 // @Param token header string true "token"
 // @Param data body UserUpdateRequest true "参数"
 // @Router /api/users [put]

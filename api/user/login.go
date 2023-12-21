@@ -18,7 +18,7 @@ type UserLoginRequest struct {
 // UserLoginView 用户登录
 // @Tags 用户管理
 // @Summary 用户登录
-// @Description 用户登录
+// @Description 用户登录，采用 JWT 方式
 // @Param data body UserLoginRequest true "参数"
 // @Router /api/login [post]
 // @Produce json

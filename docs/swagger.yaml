@@ -203,7 +203,7 @@ info:
 paths:
   /api/login:
     post:
-      description: 用户登录
+      description: 用户登录，采用 JWT 方式
       parameters:
       - description: 参数
         in: body
@@ -223,7 +223,7 @@ paths:
       - 用户管理
   /api/logout:
     get:
-      description: 用户注销
+      description: 注销的登录
       parameters:
       - description: token
         in: header
@@ -242,7 +242,7 @@ paths:
       - 用户管理
   /api/user_info:
     get:
-      description: 用户信息
+      description: 获取用户的一些详细信息
       parameters:
       - description: token
         in: header
@@ -265,7 +265,7 @@ paths:
       tags:
       - 用户管理
     put:
-      description: 用户更新自己的信息
+      description: 用户自己更新个人的一些信息
       parameters:
       - description: token
         in: header
@@ -285,12 +285,12 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/response.Response'
-      summary: 用户更新自己的信息
+      summary: 用户更新个人信息
       tags:
       - 用户管理
   /api/user_password:
     put:
-      description: 用户修改密码
+      description: 用户修改个人账号的密码
       parameters:
       - description: token
         in: header
@@ -315,7 +315,7 @@ paths:
       - 用户管理
   /api/users:
     delete:
-      description: 删除用户
+      description: 从数据库中删除用户
       parameters:
       - description: token
         in: header
@@ -333,7 +333,7 @@ paths:
       tags:
       - 用户管理
     get:
-      description: 用户列表
+      description: 获取用户列表
       parameters:
       - in: query
         name: key
@@ -395,7 +395,7 @@ paths:
       tags:
       - 用户管理
     put:
-      description: 管理员更新用户信息
+      description: 管理员更新用户的一些信息
       parameters:
       - description: token
         in: header

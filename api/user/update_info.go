@@ -16,7 +16,7 @@ type UserUpdateInfoRequest struct {
 // UserUpdateInfoView 用户更新自己的信息
 // @Tags 用户管理
 // @Summary 用户更新个人信息
-// @Description 用户更新个人信息
+// @Description 用户自己更新个人的一些信息
 // @Param token header string true "token"
 // @Param data body UserUpdateInfoRequest true "参数"
 // @Router /api/user_info [put]
