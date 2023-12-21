@@ -17,7 +17,7 @@ import (
 // @Param token header string true "token"
 // @Router /api/users [delete]
 // @Produce json
-// @Success 200 {object} res.Response{}
+// @Success 200 {object} response.Response{}
 func (UserApi) UserRemoveView(c *gin.Context) {
 	var cr models.IDListRequest
 	err := c.ShouldBindJSON(&cr)

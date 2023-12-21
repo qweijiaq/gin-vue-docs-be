@@ -16,7 +16,7 @@ import (
 // @Param token header string true "token"
 // @Router /api/logout [get]
 // @Produce json
-// @Success 200 {object} res.Response{}
+// @Success 200 {object} response.Response{}
 func (UserApi) UserLogoutView(c *gin.Context) {
 	token := c.Request.Header.Get("token")
 	claims, _ := jwts.ParseToken(token)

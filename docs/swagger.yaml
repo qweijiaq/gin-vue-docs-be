@@ -1,0 +1,421 @@
+basePath: /
+definitions:
+  models.RoleModel:
+    properties:
+      createdAt:
+        description: 添加时间
+        type: string
+      id:
+        description: 主键 ID
+        type: integer
+      isSystem:
+        description: 是否是系统角色
+        type: boolean
+      pwd:
+        description: 角色密码
+        type: string
+      title:
+        description: 角色的名称
+        type: string
+      updatedAt:
+        description: 更新时间
+        type: string
+    type: object
+  models.UserModel:
+    properties:
+      addr:
+        description: 地址
+        type: string
+      avatar:
+        description: 头像
+        type: string
+      createdAt:
+        description: 添加时间
+        type: string
+      email:
+        description: 邮箱
+        type: string
+      id:
+        description: 主键 ID
+        type: integer
+      ip:
+        description: IP
+        type: string
+      lastLogin:
+        description: 用户最后登录时间
+        type: string
+      nickName:
+        description: 昵称
+        type: string
+      roleID:
+        description: 用户对应的角色
+        type: integer
+      roleModel:
+        allOf:
+        - $ref: '#/definitions/models.RoleModel'
+        description: 用户角色信息
+      updatedAt:
+        description: 更新时间
+        type: string
+      userName:
+        description: 用户名
+        type: string
+    type: object
+  response.Code:
+    enum:
+    - 0
+    - 7
+    - 9
+    type: integer
+    x-enum-comments:
+      ErrCode: 系统错误
+      InValidCode: 校验错误
+    x-enum-varnames:
+    - SUCCESS
+    - ErrCode
+    - InValidCode
+  response.ListResponse-models_UserModel:
+    properties:
+      count:
+        type: integer
+      list:
+        items:
+          $ref: '#/definitions/models.UserModel'
+        type: array
+    type: object
+  response.Response:
+    properties:
+      code:
+        $ref: '#/definitions/response.Code'
+      data: {}
+      msg:
+        type: string
+    type: object
+  user.UserCreateRequest:
+    properties:
+      nickName:
+        description: 昵称
+        type: string
+      password:
+        description: 密码
+        type: string
+      roleID:
+        description: 角色 ID
+        type: integer
+      userName:
+        description: 用户名
+        type: string
+    required:
+    - password
+    - roleID
+    - userName
+    type: object
+  user.UserInfoResponse:
+    properties:
+      addr:
+        description: 地址
+        type: string
+      avatar:
+        description: 头像
+        type: string
+      createdAt:
+        description: 添加时间
+        type: string
+      email:
+        description: 邮箱
+        type: string
+      id:
+        description: 主键 ID
+        type: integer
+      ip:
+        description: IP
+        type: string
+      lastLogin:
+        description: 用户最后登录时间
+        type: string
+      nickName:
+        description: 昵称
+        type: string
+      role:
+        type: string
+      roleID:
+        description: 用户对应的角色
+        type: integer
+      roleModel:
+        allOf:
+        - $ref: '#/definitions/models.RoleModel'
+        description: 用户角色信息
+      updatedAt:
+        description: 更新时间
+        type: string
+      userName:
+        type: string
+    type: object
+  user.UserLoginRequest:
+    properties:
+      password:
+        type: string
+      userName:
+        type: string
+    required:
+    - password
+    - userName
+    type: object
+  user.UserUpdateInfoRequest:
+    properties:
+      avatar:
+        type: string
+      nickName:
+        type: string
+    type: object
+  user.UserUpdatePasswordRequest:
+    properties:
+      oldPwd:
+        type: string
+      password:
+        type: string
+    required:
+    - oldPwd
+    - password
+    type: object
+  user.UserUpdateRequest:
+    properties:
+      id:
+        type: integer
+      nickName:
+        description: 昵称
+        type: string
+      password:
+        description: 密码
+        type: string
+      roleID:
+        description: 角色id
+        type: integer
+    required:
+    - id
+    type: object
+host: 127.0.0.1:3000
+info:
+  contact: {}
+  description: API 文档
+  title: 知识库项目 API 文档
+  version: "1.0"
+paths:
+  /api/login:
+    post:
+      description: 用户登录
+      parameters:
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 用户登录
+      tags:
+      - 用户管理
+  /api/logout:
+    get:
+      description: 用户注销
+      parameters:
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 用户注销
+      tags:
+      - 用户管理
+  /api/user_info:
+    get:
+      description: 用户信息
+      parameters:
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/user.UserInfoResponse'
+              type: object
+      summary: 用户信息
+      tags:
+      - 用户管理
+    put:
+      description: 用户更新自己的信息
+      parameters:
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserUpdateInfoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 用户更新自己的信息
+      tags:
+      - 用户管理
+  /api/user_password:
+    put:
+      description: 用户修改密码
+      parameters:
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserUpdatePasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 用户修改密码
+      tags:
+      - 用户管理
+  /api/users:
+    delete:
+      description: 删除用户
+      parameters:
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 删除用户
+      tags:
+      - 用户管理
+    get:
+      description: 用户列表
+      parameters:
+      - in: query
+        name: key
+        type: string
+      - in: query
+        name: limit
+        type: integer
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: roleID
+        type: integer
+      - in: query
+        name: sort
+        type: string
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.ListResponse-models_UserModel'
+              type: object
+      summary: 用户列表
+      tags:
+      - 用户管理
+    post:
+      description: 创建用户，只能管理员创建
+      parameters:
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserCreateRequest'
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 创建用户
+      tags:
+      - 用户管理
+    put:
+      description: 管理员更新用户信息
+      parameters:
+      - description: token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: 参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: 管理员更新用户信息
+      tags:
+      - 用户管理
+swagger: "2.0"

@@ -23,7 +23,7 @@ type UserUpdateRequest struct {
 // @Param data body UserUpdateRequest true "参数"
 // @Router /api/users [put]
 // @Produce json
-// @Success 200 {object} res.Response{}
+// @Success 200 {object} response.Response{}
 func (UserApi) UserUpdateView(c *gin.Context) {
 	var cr UserUpdateRequest
 	err := c.ShouldBindJSON(&cr)

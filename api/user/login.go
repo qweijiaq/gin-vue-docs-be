@@ -15,6 +15,14 @@ type UserLoginRequest struct {
 	Password string `json:"password" binding:"required" label:"密码"`
 }
 
+// UserLoginView 用户登录
+// @Tags 用户管理
+// @Summary 用户登录
+// @Description 用户登录
+// @Param data body UserLoginRequest true "参数"
+// @Router /api/login [post]
+// @Produce json
+// @Success 200 {object} response.Response{}
 func (UserApi) UserLoginView(c *gin.Context) {
 	var cr UserLoginRequest
 	err := c.ShouldBindJSON(&cr)

@@ -19,9 +19,9 @@ type UserInfoResponse struct {
 // @Summary 用户信息
 // @Description 用户信息
 // @Param token header string true "token"
-// @Router /api/users_info [get]
+// @Router /api/user_info [get]
 // @Produce json
-// @Success 200 {object} res.Response{data=UserInfoResponse}
+// @Success 200 {object} response.Response{data=UserInfoResponse}
 func (UserApi) UserInfoView(c *gin.Context) {
 	_claims, _ := c.Get("claims")
 	claims, _ := _claims.(*jwts.CustomClaims)

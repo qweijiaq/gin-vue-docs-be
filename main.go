@@ -2,11 +2,17 @@ package main
 
 import (
 	"gvd_server/core"
+	_ "gvd_server/docs"
 	"gvd_server/flags"
 	"gvd_server/global"
 	"gvd_server/routers"
 )
 
+// @title 知识库项目 API 文档
+// @version 1.0
+// @description API 文档
+// @host 127.0.0.1:3000
+// @BasePath /
 func main() {
 	global.Log = core.InitLogger()
 	global.Config = core.InitConfig()

@@ -20,7 +20,7 @@ type UserListRequest struct {
 // @Param token header string true "token"
 // @Router /api/users [get]
 // @Produce json
-// @Success 200 {object} res.Response{data=res.ListResponse[models.UserModel]}
+// @Success 200 {object} response.Response{data=response.ListResponse[models.UserModel]}
 func (UserApi) UserListView(c *gin.Context) {
 	var cr UserListRequest
 	c.ShouldBindQuery(&cr)
