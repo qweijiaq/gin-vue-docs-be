@@ -26,6 +26,7 @@ func Routers() *gin.Engine {
 	}
 
 	routerGroup.UserRouter()
+	routerGroup.ImageRouter()
 
 	return router
 }
