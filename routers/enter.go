@@ -25,6 +25,10 @@ func Routers() *gin.Engine {
 		apiGroup,
 	}
 
+	// 第一个参数是 web 的访问别名  第二个参数是内部的映射目录
+	// 线上如果有 Nginx，这一步可以省略
+	router.Static("/uploads", "uploads")
+
 	routerGroup.UserRouter()
 	routerGroup.ImageRouter()
 
