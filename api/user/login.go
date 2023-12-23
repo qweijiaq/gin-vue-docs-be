@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gvd_server/global"
 	"gvd_server/models"
+	"gvd_server/plugins/log_stash"
 	"gvd_server/service/common/response"
 	"gvd_server/utils/encryption"
 	"gvd_server/utils/jwts"
@@ -35,11 +36,13 @@ func (UserApi) UserLoginView(c *gin.Context) {
 	err = global.DB.Take(&user, "userName = ?", cr.UserName).Error
 	if err != nil {
 		global.Log.Warn("用户名不存在", cr.UserName)
+		log_stash.NewFailLogin("用户名不存在", cr.UserName, cr.Password, c)
 		response.FailWithMsg("用户名或密码错误", c)
 		return
 	}
 	if !encryption.CheckPwd(user.Password, cr.Password) {
 		global.Log.Warn("用户密码错误", cr.UserName, cr.Password)
+		log_stash.NewFailLogin("用户密码错误", cr.UserName, cr.Password, c)
 		response.FailWithMsg("用户名或密码错误", c)
 		return
 	}
@@ -55,6 +58,7 @@ func (UserApi) UserLoginView(c *gin.Context) {
 		return
 	}
 	c.Request.Header.Set("token", token)
+	log_stash.NewSuccessLogin(c)
 	global.DB.Model(&user).Update("lastLogin", time.Now())
 
 	_ip := c.ClientIP()
