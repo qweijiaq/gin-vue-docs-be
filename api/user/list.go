@@ -23,7 +23,11 @@ type UserListRequest struct {
 // @Success 200 {object} response.Response{data=response.ListResponse[models.UserModel]}
 func (UserApi) UserListView(c *gin.Context) {
 	var cr UserListRequest
-	c.ShouldBindQuery(&cr)
+	err := c.ShouldBindQuery(&cr)
+	if err != nil {
+		response.FailWithInValidError(err, &cr, c)
+		return
+	}
 	_list, count, _ := list.QueryList(models.UserModel{RoleID: cr.RoleID}, list.Option{
 		Pagination: cr.Pagination,
 		Likes:      []string{"nickName", "userName"},

@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gvd_server/global"
 	"gvd_server/models"
+	"gvd_server/plugins/log_stash"
 	"gvd_server/service/common/response"
 	"gvd_server/utils/jwts"
 )
@@ -23,12 +24,17 @@ type UserInfoResponse struct {
 // @Produce json
 // @Success 200 {object} response.Response{data=UserInfoResponse}
 func (UserApi) UserInfoView(c *gin.Context) {
+	log := log_stash.NewAction(c)
+
 	_claims, _ := c.Get("claims")
 	claims, _ := _claims.(*jwts.CustomClaims)
 
 	var user models.UserModel
 	err := global.DB.Preload("RoleModel").Take(&user, claims.UserID).Error
 	if err != nil {
+		log.Error("获取用户信息失败")
+		log.SetItemInfo("userID", claims.UserID)
+		log.SetItemErr("失败原因", "该用户不存在")
 		response.FailWithMsg("用户不存在", c)
 		return
 	}

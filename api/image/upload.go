@@ -5,7 +5,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"gvd_server/global"
 	"gvd_server/models"
+	"gvd_server/plugins/log_stash"
 	"gvd_server/service/common/response"
+	"gvd_server/utils/file"
 	"gvd_server/utils/hash"
 	"gvd_server/utils/jwts"
 	"path"
@@ -33,11 +35,19 @@ var ImageWhiteList = []string{
 // @Produce json
 // @Success 200 {object} response.Response{}
 func (ImageApi) ImageUploadView(c *gin.Context) {
+	log := log_stash.NewAction(c)
+	defer log.SetFlush()
 	fileHeader, err := c.FormFile("image")
+	log.SetUpload(c)
 	if err != nil {
 		response.FailWithMsg("图片参数错误", c)
 		return
 	}
+
+	log.SetRequestHeader(c)
+	log.SetRequest(c)
+	log.SetResponse(c)
+
 	_claims, _ := c.Get("claims")
 	claims, _ := _claims.(*jwts.CustomClaims)
 	savePath := path.Join("uploads", claims.NickName, fileHeader.Filename)
@@ -45,12 +55,19 @@ func (ImageApi) ImageUploadView(c *gin.Context) {
 	// 白名单判断
 	if !InImageWhiteList(fileHeader.Filename, ImageWhiteList) {
 		response.FailWithMsg("文件非法", c)
+		log.Warn("文件非法")
+		_list := strings.Split(fileHeader.Filename, ".")
+		log.SetItemWarn("suffix", _list[len(_list)-1])
+		log.SetItemWarn("警告原因", "不支持该后缀名的文件")
 		return
 	}
 
 	// 文件大小判断  2MB
 	if fileHeader.Size > int64(2*1024*1024) {
 		response.FailWithMsg("文件过大", c)
+		log.Warn("文件过大")
+		log.SetItemWarn("size", file.FormatBytes(fileHeader.Size))
+		log.SetItemWarn("警告原因", "该文件过大")
 		return
 	}
 
@@ -80,6 +97,9 @@ func (ImageApi) ImageUploadView(c *gin.Context) {
 		if err != nil {
 			global.Log.Errorf("%s 文件保存错误 %s", savePath, err)
 			response.FailWithMsg("上传图片错误", c)
+			log.Error("图片保存失败")
+			log.SetItemInfo("savePath", savePath)
+			log.SetItemErr("失败原因", err.Error())
 			return
 		}
 	} else {
@@ -100,15 +120,15 @@ func (ImageApi) ImageUploadView(c *gin.Context) {
 	if err != nil {
 		global.Log.Errorln(err)
 		response.FailWithMsg("文件上传失败", c)
+		log.Error("图片上传失败")
+		log.SetItemInfo("filePath", imageModel.WebPath())
+		log.SetItemErr("失败原因", err.Error())
 		return
 	}
 
-	err = c.SaveUploadedFile(fileHeader, savePath)
-	if err != nil {
-		global.Log.Errorf("%s 文件保存错误 %s", savePath, err)
-		response.FailWithMsg("上传图片失败", c)
-		return
-	}
+	log.SetImage(imageModel.WebPath())
+	log.Info("图片上传成功")
+	log.SetItemInfo("filePath", imageModel.WebPath())
 	response.OK(imageModel.WebPath(), "图片上传成功", c)
 
 }

@@ -3,6 +3,7 @@ package user
 import (
 	"github.com/gin-gonic/gin"
 	"gvd_server/global"
+	"gvd_server/plugins/log_stash"
 	"gvd_server/service/common/response"
 	"gvd_server/service/redis"
 	"gvd_server/utils/jwts"
@@ -18,6 +19,7 @@ import (
 // @Produce json
 // @Success 200 {object} response.Response{}
 func (UserApi) UserLogoutView(c *gin.Context) {
+	log := log_stash.NewAction(c)
 	token := c.Request.Header.Get("token")
 	claims, _ := jwts.ParseToken(token)
 	// 过期时间
@@ -29,5 +31,7 @@ func (UserApi) UserLogoutView(c *gin.Context) {
 	if err != nil {
 		global.Log.Error(err)
 	}
+	log.Info("用户注销成功")
+	log.SetItemInfo("userID", claims.UserID)
 	response.OKWithMsg("用户注销成功", c)
 }

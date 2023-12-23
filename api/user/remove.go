@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 	"gvd_server/global"
 	"gvd_server/models"
+	"gvd_server/plugins/log_stash"
 	"gvd_server/service/common/response"
 )
 
@@ -20,6 +21,7 @@ import (
 // @Success 200 {object} response.Response{}
 func (UserApi) UserRemoveView(c *gin.Context) {
 	var cr models.IDListRequest
+	log := log_stash.NewAction(c)
 	err := c.ShouldBindJSON(&cr)
 	if err != nil {
 		response.FailWithError(err, c)
@@ -30,14 +32,21 @@ func (UserApi) UserRemoveView(c *gin.Context) {
 	global.DB.Find(&userList, cr.IDList)
 
 	if len(cr.IDList) != len(userList) {
+		log.Error("用户删除失败")
+		log.SetItemErr("失败原因", "数据一致性校验不通过")
 		response.FailWithMsg("数据一致性校验不通过", c)
 		return
 	}
 	for _, model := range userList {
 		err = UserRemoveService(model)
 		if err != nil {
+			log.Error("用户删除失败")
+			log.SetItemInfo("userName", model.UserName)
+			log.SetItemErr("失败原因", err.Error())
 			logrus.Errorf("删除用户 %s 失败 err: %s", model.UserName, err.Error())
 		} else {
+			log.Info("用户删除成功")
+			log.SetItemInfo("userName", model.UserName)
 			logrus.Infof("删除用户 %s 成功", model.UserName)
 		}
 	}

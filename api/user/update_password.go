@@ -3,6 +3,7 @@ package user
 import (
 	"github.com/gin-gonic/gin"
 	"gvd_server/global"
+	"gvd_server/plugins/log_stash"
 	"gvd_server/service/common/response"
 	"gvd_server/utils/encryption"
 	"gvd_server/utils/jwts"
@@ -24,6 +25,7 @@ type UserUpdatePasswordRequest struct {
 // @Success 200 {object} response.Response{}
 func (UserApi) UserUpdatePasswordView(c *gin.Context) {
 	var cr UserUpdatePasswordRequest
+	log := log_stash.NewAction(c)
 	err := c.ShouldBindJSON(&cr)
 	if err != nil {
 		response.FailWithInValidError(err, &cr, c)
@@ -33,16 +35,23 @@ func (UserApi) UserUpdatePasswordView(c *gin.Context) {
 	claims, _ := _claims.(*jwts.CustomClaims)
 	user, err := claims.GetUser()
 	if err != nil {
-		response.FailWithMsg("用户不存在", c)
+		log.Error("用户密码修改失败")
+		log.SetItemInfo("userName", user.UserName)
+		log.SetItemErr("失败原因", "该用户不存在")
+		response.FailWithMsg("该用户不存在", c)
 		return
 	}
 	if !encryption.CheckPwd(user.Password, cr.OldPwd) {
+		log.Error("用户密码修改失败")
+		log.SetItemErr("失败原因", "原密码错误")
 		response.FailWithMsg("原密码错误", c)
 		return
 	}
 	hashPwd := encryption.HashPwd(cr.Password)
 	global.DB.Model(user).Update("password", hashPwd)
 
+	log.Info("用户密码修改成功")
+	log.SetItemInfo("userName", user.UserName)
 	response.OKWithMsg("用户密码修改成功", c)
 	return
 

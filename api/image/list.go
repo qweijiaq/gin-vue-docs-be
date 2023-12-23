@@ -24,7 +24,11 @@ type ImageListResponse struct {
 // @Success 200 {object} response.Response{data=response.ListResponse[ImageListResponse]}
 func (ImageApi) ImageListView(c *gin.Context) {
 	var cr models.Pagination
-	c.ShouldBindQuery(&cr)
+	err := c.ShouldBindQuery(&cr)
+	if err != nil {
+		response.FailWithInValidError(err, &cr, c)
+		return
+	}
 	_list, count, _ := list.QueryList(models.ImageModel{}, list.Option{
 		Pagination: cr,
 		Likes:      []string{"fileName"},

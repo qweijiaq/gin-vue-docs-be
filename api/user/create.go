@@ -1,10 +1,13 @@
 package user
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gvd_server/global"
 	"gvd_server/models"
+	"gvd_server/plugins/log_stash"
 	"gvd_server/service/common/response"
 	"gvd_server/utils/encryption"
 	"time"
@@ -33,42 +36,60 @@ func (UserApi) UserCreateView(c *gin.Context) {
 		response.FailWithInValidError(err, &cr, c)
 		return
 	}
-	var user models.UserModel
-	err = global.DB.Take(&user, "userName = ?", cr.UserName).Error
-	if err == nil {
-		response.FailWithMsg("该用户名已存在", c)
-		return
-	}
-	if cr.NickName == "" {
-		// 昵称不存在, 按规律生成
-		var maxID uint
-		err = global.DB.Model(models.UserModel{}).Select("max(id)").Scan(&maxID).Error
-		if err != nil {
-			maxID = 0
-		}
-		user.NickName = fmt.Sprintf("用户_%d", maxID+1)
-	}
-	var role models.RoleModel
-	err = global.DB.Take(&role, cr.RoleID).Error
-	if err != nil {
-		response.FailWithMsg("该角色不存在", c)
-		return
-	}
-	user.Password = encryption.HashPwd(user.Password)
-	err = global.DB.Create(&models.UserModel{
+
+	log := log_stash.NewAction(c)
+	byteData, _ := json.Marshal(cr)
+	log.SetItemInfo("创建参数", string(byteData))
+
+	err = createUser(models.UserModel{
 		UserName:  cr.UserName,
 		Password:  cr.Password,
 		NickName:  cr.NickName,
 		IP:        c.RemoteIP(),
 		RoleID:    cr.RoleID,
 		LastLogin: time.Now(),
-	}).Error
+	}, &log)
 	if err != nil {
-		global.Log.Error(err)
-		response.FailWithMsg("用户创建失败", c)
+		response.FailWithMsg(err.Error(), c)
 		return
 	}
-
 	response.OKWithMsg("用户创建成功", c)
 	return
+}
+
+func createUser(user models.UserModel, log *log_stash.Action) (err error) {
+	err = global.DB.Take(&user, "userName = ?", user.UserName).Error
+	if err == nil {
+		log.Error("创建用户失败")
+		log.SetItemInfo("userName", user.UserName)
+		log.SetItemErr("失败原因", "该用户名已存在")
+		return errors.New("该用户名已存在")
+	}
+	log.SetItemInfo("是否自动生成昵称", user.NickName == "")
+	if user.NickName == "" {
+		// 昵称不存在, 按规律生成
+		var maxID uint
+		global.DB.Model(models.UserModel{}).Select("max(id)").Scan(&maxID)
+		user.NickName = fmt.Sprintf("用户_%d", maxID+1)
+		log.SetItemInfo("自动生成昵称", user.NickName)
+	}
+	var role models.RoleModel
+	err = global.DB.Take(&role, user.RoleID).Error
+	if err != nil {
+		log.Error("创建用户失败")
+		log.SetItemInfo("角色ID", user.RoleID)
+		log.SetItemErr("失败原因", "该角色不存在")
+		return errors.New("该角色不存在")
+	}
+	user.Password = encryption.HashPwd(user.Password)
+	err = global.DB.Create(&user).Error
+	if err != nil {
+		global.Log.Error(err)
+		log.Error("用户创建失败")
+		log.SetItemErr("失败原因", err.Error())
+		return errors.New("用户创建失败")
+	}
+	log.Info("用户创建成功")
+	log.SetItemInfo("userName", user.UserName)
+	return nil
 }
