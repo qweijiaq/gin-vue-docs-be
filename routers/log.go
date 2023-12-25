@@ -9,5 +9,6 @@ func (router RouterGroup) LogRouter() {
 	app := api.App.LogApi
 	r := router.Group("logs").Use(middleware.JwtAdmin())
 
-	r.GET("", app.LogListView) // 日志列表
+	r.GET("", app.LogListView)     // 日志列表
+	r.GET("read", app.LogReadView) // 日志读取
 }
