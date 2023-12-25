@@ -33,6 +33,7 @@ func Routers() *gin.Engine {
 
 	routerGroup.UserRouter()
 	routerGroup.ImageRouter()
+	routerGroup.LogRouter()
 
 	return router
 }

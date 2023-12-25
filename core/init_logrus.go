@@ -98,7 +98,7 @@ func (hook DateHook) Fire(entry *logrus.Entry) error {
 	if err != nil {
 		return err
 	}
-	filename := path.Join(hook.logPath, timer, hook.appName+".log")
+	filename := path.Join(hook.logPath, timer, hook.appName+".logs")
 
 	hook.file, _ = os.OpenFile(filename, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0600)
 	hook.fileDate = timer
@@ -139,7 +139,7 @@ func (hook ErrorHook) Fire(entry *logrus.Entry) error {
 	if err != nil {
 		return err
 	}
-	filename := path.Join(hook.logPath, timer, "err.log")
+	filename := path.Join(hook.logPath, timer, "err.logs")
 
 	hook.file, _ = os.OpenFile(filename, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0600)
 	hook.fileDate = timer
