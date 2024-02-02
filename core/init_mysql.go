@@ -2,7 +2,6 @@ package core
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -11,9 +10,8 @@ import (
 )
 
 func InitMysql() *gorm.DB {
-
 	if global.Config.Mysql.Host == "" {
-		logrus.Warn("未配置 MySQL，取消 Gorm 连接")
+		global.Log.Warn("未配置 MySQL，取消 Gorm 连接")
 		return nil
 	}
 	dsn := global.Config.Mysql.Dsn()
@@ -31,10 +29,10 @@ func InitMysql() *gorm.DB {
 	mysqlLogger = logger.Default.LogMode(logLevel)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger:                                   mysqlLogger,
-		DisableForeignKeyConstraintWhenMigrating: true,
+		DisableForeignKeyConstraintWhenMigrating: true, // 数据迁移时不生成外键约束
 	})
 	if err != nil {
-		logrus.Fatalf(fmt.Sprintf("[%s] MySQL 连接失败, error: %s", dsn, err.Error()))
+		global.Log.Fatalf(fmt.Sprintf("[%s] MySQL 连接失败, error: %s", dsn, err.Error()))
 	}
 	sqlDB, _ := db.DB()
 	sqlDB.SetMaxIdleConns(10)               // 最大空闲连接数

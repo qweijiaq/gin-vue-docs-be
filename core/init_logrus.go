@@ -108,10 +108,10 @@ func (hook DateHook) Fire(entry *logrus.Entry) error {
 	return nil
 }
 
-// ErrorHook 将error级别的日志写入到具体文件中
+// ErrorHook 将 error 级别的日志写入到具体文件中
 type ErrorHook struct {
 	file     *os.File
-	fileDate string //判断日期切换目录
+	fileDate string // 判断日期切换目录
 	logPath  string
 	appName  string
 }
