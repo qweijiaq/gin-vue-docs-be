@@ -13,10 +13,10 @@ func DB() {
 			&models.RoleModel{},           // 角色表
 			&models.DocModel{},            // 文档表
 			&models.UserCollectDocModel{}, // 用户收藏文档表 -- 如果有自定义连接表，一定要放在被连接的两张表的后面
-			&models.RoleDocModel{},        // 角色文档表
+			&models.RoleDocModel{},        // 角色 - 文档表
 			&models.ImageModel{},          // 图片表
-			&models.UserPwdDocModel{},     // 用户密码文档表（针对用户需要密码解锁的文档）
-			&models.LoginModel{},          // 登录表
+			&models.UserPwdDocModel{},     // 用户 - 文档 - 密码表（针对用户需要密码解锁的文档）
+			&models.LoginModel{},          // 登录信息表
 			&models.DocDataModel{},        // 文档数据表
 		)
 	if err != nil {
