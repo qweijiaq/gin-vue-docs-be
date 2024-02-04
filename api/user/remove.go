@@ -3,7 +3,6 @@ package user
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"gvd_server/global"
 	"gvd_server/models"
@@ -37,27 +36,30 @@ func (UserApi) UserRemoveView(c *gin.Context) {
 		response.FailWithMsg("数据一致性校验不通过", c)
 		return
 	}
+	var count int
+	// 即使是删除单个用户，也在前端将其对应的 id 包装成只有一个元素的切片，统一走批量删除接口
 	for _, model := range userList {
 		err = UserRemoveService(model)
 		if err != nil {
 			log.Error("用户删除失败")
-			log.SetItemInfo("userName", model.UserName)
+			log.SetItemInfo("username", model.Username)
 			log.SetItemErr("失败原因", err.Error())
-			logrus.Errorf("删除用户 %s 失败 err: %s", model.UserName, err.Error())
+			global.Log.Errorf("删除用户 %s 失败 err: %s", model.Username, err.Error())
 		} else {
 			log.Info("用户删除成功")
-			log.SetItemInfo("userName", model.UserName)
-			logrus.Infof("删除用户 %s 成功", model.UserName)
+			log.SetItemInfo("username", model.Username)
+			global.Log.Infof("删除用户 %s 成功", model.Username)
+			count += 1
 		}
 	}
-	response.OKWithMsg(fmt.Sprintf("批量删除成功，共删除%d个用户", len(cr.IDList)), c)
+	response.OKWithMsg(fmt.Sprintf("批量删除成功，共删除%d个用户", count), c)
 	return
-
 }
 
+// UserRemoveService 删除用户时也需要连带删除与该用户相关的其他数据库内容
 func UserRemoveService(user models.UserModel) (err error) {
 	err = global.DB.Transaction(func(tx *gorm.DB) error {
-		// imageModel 连带删除
+		// ImageModel 连带删除
 		var imageList []models.ImageModel
 		tx.Find(&imageList, "userID = ?", user.ID)
 		if len(imageList) > 0 {
@@ -66,11 +68,11 @@ func UserRemoveService(user models.UserModel) (err error) {
 				return err
 			}
 		}
-		// loginModel 不用连带删除
+		// LoginModel 不用连带删除
 
 		// UserCollDocModel 连带删除
 		var userCollList []models.UserCollectDocModel
-		tx.Find(&userCollList, "user_id = ?", user.ID)
+		tx.Find(&userCollList, "userID = ?", user.ID)
 		if len(userCollList) > 0 {
 			err = tx.Delete(&userCollList).Error
 			if err != nil {
@@ -79,7 +81,7 @@ func UserRemoveService(user models.UserModel) (err error) {
 		}
 		// UserPwdDocModel 连带删除
 		var userPwdList []models.UserPwdDocModel
-		tx.Find(&userPwdList, "user_id = ?", user.ID)
+		tx.Find(&userPwdList, "userID = ?", user.ID)
 		if len(userPwdList) > 0 {
 			err = tx.Delete(&userPwdList).Error
 			if err != nil {

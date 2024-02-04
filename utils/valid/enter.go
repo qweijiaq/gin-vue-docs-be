@@ -1,6 +1,7 @@
 package valid
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/locales/en"
@@ -18,7 +19,7 @@ var (
 )
 
 func init() {
-	InitTrans("zh")
+	_ = InitTrans("zh")
 }
 
 // InitTrans 初始化翻译器
@@ -29,6 +30,7 @@ func InitTrans(locale string) (err error) {
 		// 注册一个获取 json tag 的自定义方法
 		v.RegisterTagNameFunc(func(fld reflect.StructField) string {
 			fieldName := fld.Name
+			// 先尝试获取 label
 			name := strings.SplitN(fld.Tag.Get("label"), ",", 2)[0]
 			if name == "" {
 				// 没有 label 就用 json
@@ -64,13 +66,15 @@ func InitTrans(locale string) (err error) {
 		default:
 			err = enTranslations.RegisterDefaultTranslations(v, trans)
 		}
-		return
+		return nil
 	}
-	return
+	return nil
 }
 
+// Error 参数校验错误时返回错误信息
 func Error(err error) (ret string) {
-	validationErrors, ok := err.(validator.ValidationErrors)
+	var validationErrors validator.ValidationErrors
+	ok := errors.As(err, &validationErrors)
 	if !ok {
 		return err.Error()
 	}
@@ -89,6 +93,7 @@ func Error(err error) (ret string) {
 	return ret
 }
 
+// InValidError 参数校验错误时返回错误信息和数据，数据是校验错误对应的字段
 func InValidError(err error, obj any) (ret string, data map[string]string) {
 	data = map[string]string{}
 	getObj := reflect.TypeOf(obj)

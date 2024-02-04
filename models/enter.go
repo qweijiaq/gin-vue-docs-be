@@ -9,16 +9,18 @@ type Model struct {
 }
 
 type Pagination struct {
-	Page  int    `json:"page" form:"page"`
-	Limit int    `json:"limit" form:"limit"`
-	Key   string `json:"key" form:"key"`
-	Sort  string `json:"sort" form:"sort"`
+	Page  int    `json:"page" form:"page"`   // 页
+	Limit int    `json:"limit" form:"limit"` // 限制 -- 即 1 页多少条
+	Key   string `json:"key" form:"key"`     // 关键词 -- 搜索栏中输入的内容，通常用于模糊查询
+	Sort  string `json:"sort" form:"sort"`   // 排序方式
 }
 
+// IDListRequest 批量操作 ID 列表对应的多个对象
 type IDListRequest struct {
-	IDList []uint `json:"idList" form:"idList" binding:"required" label:"id列表"`
+	IDList []uint `json:"idList" form:"idList" binding:"required" label:"ID列表"`
 }
 
+// IDRequest 单独操作 ID 对应的对象
 type IDRequest struct {
 	ID uint `json:"id" form:"id" uri:"id"`
 }

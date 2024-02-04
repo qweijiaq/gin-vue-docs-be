@@ -11,9 +11,10 @@ import (
 	"time"
 )
 
+// UserLoginRequest 用户登录时传入的参数
 type UserLoginRequest struct {
-	UserName string `json:"userName" binding:"required" label:"用户名"`
-	Password string `json:"password" binding:"required" label:"密码"`
+	Username string `json:"username" binding:"required" label:"用户名"` // 用户名
+	Password string `json:"password" binding:"required" label:"密码"`  // 密码
 }
 
 // UserLoginView 用户登录
@@ -33,22 +34,22 @@ func (UserApi) UserLoginView(c *gin.Context) {
 	}
 
 	var user models.UserModel
-	err = global.DB.Take(&user, "userName = ?", cr.UserName).Error
+	err = global.DB.Take(&user, "userName = ?", cr.Username).Error
 	if err != nil {
-		global.Log.Warn("用户名不存在", cr.UserName)
-		log_stash.NewFailLogin("用户名不存在", cr.UserName, cr.Password, c)
+		global.Log.Warn("用户名不存在", cr.Username)
+		log_stash.NewFailLogin("用户名不存在", cr.Username, cr.Password, c)
 		response.FailWithMsg("用户名或密码错误", c)
 		return
 	}
 	if !encryption.CheckPwd(user.Password, cr.Password) {
-		global.Log.Warn("用户密码错误", cr.UserName, cr.Password)
-		log_stash.NewFailLogin("用户密码错误", cr.UserName, cr.Password, c)
+		global.Log.Warn("用户密码错误", cr.Username, cr.Password)
+		log_stash.NewFailLogin("用户密码错误", cr.Username, cr.Password, c)
 		response.FailWithMsg("用户名或密码错误", c)
 		return
 	}
 
 	token, err := jwts.GenToken(jwts.JwtPayLoad{
-		NickName: user.NickName,
+		Nickname: user.Nickname,
 		RoleID:   user.RoleID,
 		UserID:   user.ID,
 	})
@@ -70,7 +71,7 @@ func (UserApi) UserLoginView(c *gin.Context) {
 		err = global.DB.Create(&models.LoginModel{
 			UserID:   user.ID,
 			IP:       _ip,
-			NickName: user.NickName,
+			Nickname: user.Nickname,
 			UA:       ua,
 			Token:    token,
 			Addr:     addr,
@@ -82,5 +83,4 @@ func (UserApi) UserLoginView(c *gin.Context) {
 	}()
 	response.OKWithData(token, c)
 	return
-
 }

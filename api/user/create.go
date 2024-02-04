@@ -13,11 +13,12 @@ import (
 	"time"
 )
 
+// UserCreateRequest 创建用户时的请求参数
 type UserCreateRequest struct {
-	UserName string `json:"userName" binding:"required" label:"用户名"` // 用户名
-	Password string `json:"password" binding:"required"`             // 密码
-	NickName string `json:"nickName"`                                // 昵称
-	RoleID   uint   `json:"roleID" binding:"required"`               // 角色 ID
+	Username string `json:"username" binding:"required" label:"用户名"` // 用户名
+	Password string `json:"password" binding:"required" label:"密码"`  // 密码
+	Nickname string `json:"nickname" label:"昵称"`                     // 昵称
+	RoleID   uint   `json:"roleID" binding:"required" label:"角色"`    // 角色 ID
 }
 
 // UserCreateView 创建用户
@@ -30,8 +31,8 @@ type UserCreateRequest struct {
 // @Produce json
 // @Success 200 {object} response.Response{}
 func (UserApi) UserCreateView(c *gin.Context) {
-	var cr UserCreateRequest
-	err := c.ShouldBindJSON(&cr)
+	var cr UserCreateRequest     // cr -> controller request
+	err := c.ShouldBindJSON(&cr) // ShouldBindJSON 参数通过 JSON 传入（通常是 POST、PUT 请求）
 	if err != nil {
 		response.FailWithInValidError(err, &cr, c)
 		return
@@ -39,12 +40,12 @@ func (UserApi) UserCreateView(c *gin.Context) {
 
 	log := log_stash.NewAction(c)
 	byteData, _ := json.Marshal(cr)
-	log.SetItemInfo("创建参数", string(byteData))
+	log.SetItemInfo("创建用户传入的参数", string(byteData))
 
-	err = createUser(models.UserModel{
-		UserName:  cr.UserName,
+	err = CreateUser(models.UserModel{
+		Username:  cr.Username,
 		Password:  cr.Password,
-		NickName:  cr.NickName,
+		Nickname:  cr.Nickname,
 		IP:        c.RemoteIP(),
 		RoleID:    cr.RoleID,
 		LastLogin: time.Now(),
@@ -57,21 +58,21 @@ func (UserApi) UserCreateView(c *gin.Context) {
 	return
 }
 
-func createUser(user models.UserModel, log *log_stash.Action) (err error) {
-	err = global.DB.Take(&user, "userName = ?", user.UserName).Error
+func CreateUser(user models.UserModel, log *log_stash.Action) (err error) {
+	err = global.DB.Take(&user, "userName = ?", user.Username).Error
 	if err == nil {
 		log.Error("创建用户失败")
-		log.SetItemInfo("userName", user.UserName)
+		log.SetItemInfo("username", user.Username)
 		log.SetItemErr("失败原因", "该用户名已存在")
 		return errors.New("该用户名已存在")
 	}
-	log.SetItemInfo("是否自动生成昵称", user.NickName == "")
-	if user.NickName == "" {
+	log.SetItemInfo("是否自动生成昵称", user.Nickname == "")
+	if user.Nickname == "" {
 		// 昵称不存在, 按规律生成
 		var maxID uint
 		global.DB.Model(models.UserModel{}).Select("max(id)").Scan(&maxID)
-		user.NickName = fmt.Sprintf("用户_%d", maxID+1)
-		log.SetItemInfo("自动生成昵称", user.NickName)
+		user.Nickname = fmt.Sprintf("用户_%d", maxID+1)
+		log.SetItemInfo("自动生成昵称", user.Nickname)
 	}
 	var role models.RoleModel
 	err = global.DB.Take(&role, user.RoleID).Error
@@ -81,7 +82,7 @@ func createUser(user models.UserModel, log *log_stash.Action) (err error) {
 		log.SetItemErr("失败原因", "该角色不存在")
 		return errors.New("该角色不存在")
 	}
-	user.Password = encryption.HashPwd(user.Password)
+	user.Password = encryption.HashPwd(user.Password) // 加密密码
 	err = global.DB.Create(&user).Error
 	if err != nil {
 		global.Log.Error(err)
@@ -90,6 +91,6 @@ func createUser(user models.UserModel, log *log_stash.Action) (err error) {
 		return errors.New("用户创建失败")
 	}
 	log.Info("用户创建成功")
-	log.SetItemInfo("userName", user.UserName)
+	log.SetItemInfo("username", user.Username)
 	return nil
 }

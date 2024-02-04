@@ -12,4 +12,5 @@ type Api struct {
 	LogApi   logs.LogApi
 }
 
+// App 指针化 Api 结构体，保证全局唯一性
 var App = new(Api)

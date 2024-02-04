@@ -9,11 +9,12 @@ import (
 	"gvd_server/utils/encryption"
 )
 
+// UserUpdateRequest 更新用户请求参数
 type UserUpdateRequest struct {
-	ID       uint   `json:"id" binding:"required" label:"用户id"`
-	Password string `json:"password"` // 密码
-	NickName string `json:"nickName"` // 昵称
-	RoleID   uint   `json:"roleID"`   // 角色id
+	ID       uint   `json:"id" binding:"required" label:"用户ID"` // 用户ID
+	Password string `json:"password" label:"密码"`                // 密码
+	Nickname string `json:"nickname" label:"昵称"`                // 昵称
+	RoleID   uint   `json:"roleID" label:"角色"`                  // 角色ID
 }
 
 // UserUpdateView 管理员更新用户信息
@@ -38,7 +39,7 @@ func (UserApi) UserUpdateView(c *gin.Context) {
 	err = global.DB.Take(&user, cr.ID).Error
 	if err != nil {
 		log.Error("用户更新失败")
-		log.SetItemInfo("userName", user.UserName)
+		log.SetItemInfo("username", user.Username)
 		log.SetItemErr("失败原因", "该用户不存在")
 		response.FailWithMsg("该用户不存在", c)
 		return
@@ -61,20 +62,19 @@ func (UserApi) UserUpdateView(c *gin.Context) {
 
 	err = global.DB.Model(&user).Updates(models.UserModel{
 		Password: cr.Password,
-		NickName: cr.NickName,
+		Nickname: cr.Nickname,
 		RoleID:   cr.RoleID,
 	}).Error
 	if err != nil {
 		global.Log.Error(err)
 		log.Error("用户更新失败")
-		log.SetItemInfo("userName", user.UserName)
+		log.SetItemInfo("username", user.Username)
 		log.SetItemErr("失败原因", err.Error())
 		response.FailWithMsg("用户更新失败", c)
 		return
 	}
 
 	log.Info("用户更新成功")
-	log.SetItemInfo("userName", user.UserName)
+	log.SetItemInfo("username", user.Username)
 	response.OKWithMsg("用户更新成功", c)
-
 }

@@ -15,14 +15,15 @@ type RouterGroup struct {
 func Routers() *gin.Engine {
 	router := gin.Default()
 
+	// 用于访问 swagger API 线上文档
 	if global.Config.System.Env == "dev" {
 		router.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
 	}
 
-	// 创建一个以 api 开头的路由分组
+	// 创建一个以 api 开头的路由分组 apiGroup -- 用于管理所有的路由
 	apiGroup := router.Group("api")
 	apiGroup.Use(middleware.LogMiddleWare())
-	// 又将这个路由分组赋给了 RouterGroup
+	// 又将这个路由分组赋给了 RouterGroup -- routerGroup 接管了对所有路由的管理
 	routerGroup := RouterGroup{
 		apiGroup,
 	}

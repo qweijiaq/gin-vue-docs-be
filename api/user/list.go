@@ -7,9 +7,10 @@ import (
 	"gvd_server/service/common/response"
 )
 
+// UserListRequest 获取用户列表时的请求参数
 type UserListRequest struct {
 	models.Pagination
-	RoleID uint `json:"roleID" form:"roleID"`
+	RoleID uint `json:"roleID" form:"roleID"` // 角色 ID -- 可根据角色查询对应的用户列表
 }
 
 // UserListView 用户列表
@@ -29,11 +30,10 @@ func (UserApi) UserListView(c *gin.Context) {
 		return
 	}
 	_list, count, _ := list.QueryList(models.UserModel{RoleID: cr.RoleID}, list.Option{
-		Pagination: cr.Pagination,
-		Likes:      []string{"nickName", "userName"},
-		Preload:    []string{"RoleModel"},
+		Pagination: cr.Pagination,                    // 分页
+		Likes:      []string{"nickname", "username"}, // 根据昵称和用户名实现模糊查询
+		Preload:    []string{"RoleModel"},            // 预加载出用户对应的角色
 	})
 	response.OKWithList(_list, count, c)
 	return
-
 }

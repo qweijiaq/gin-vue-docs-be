@@ -5,6 +5,6 @@ UserPwdDocModel 对于一个文档，如果通过该表可以查询到当前用�
 */
 type UserPwdDocModel struct {
 	Model
-	UserID uint `gorm:"column:user_id;comment:用户ID" json:"userID"` // 用户ID
-	DocID  uint `gorm:"column:doc_id;comment:文档ID" json:"docID"`   // 文档ID
+	UserID uint `gorm:"column:userID;comment:用户ID" json:"userID"` // 用户ID
+	DocID  uint `gorm:"column:docID;comment:文档ID" json:"docID"`   // 文档ID
 }

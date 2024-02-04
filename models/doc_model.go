@@ -7,7 +7,7 @@ type DocModel struct {
 	DiggCount       int         `gorm:"comment:点赞量;column:diggCount" json:"diggCount"`                                         // 点赞量
 	LookCount       int         `gorm:"comment:浏览量;column:lookCount" json:"lookCount"`                                         // 收藏量
 	Key             string      `gorm:"comment:key;not null;unique" json:"key"`                                                // 用于寻找文档上下级关系
-	ParentID        *uint       `gorm:"comment:父文档ID;column:parent_id" json:"parentID"`                                        // 父文档ID
+	ParentID        *uint       `gorm:"comment:父文档ID;column:parentID" json:"parentID"`                                         // 父文档ID
 	ParentModel     *DocModel   `gorm:"foreignKey:ParentID" json:"-"`                                                          // 父文档
 	Child           []*DocModel `gorm:"foreignKey:ParentID" json:"child"`                                                      // 子孙文档
 	FreeContent     string      `gorm:"comment:预览部分;column:freeContent" json:"freeContent"`                                    // 预览部分

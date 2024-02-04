@@ -23,12 +23,12 @@ func QueryList[T any](model T, option Option) (list []T, count int, err error) {
 		query = query.Debug()
 	}
 
-	// 默认按照时间往后排
+	// 默认按时间倒序排列
 	if option.Sort == "" {
 		option.Sort = "createdAt desc"
 	}
 
-	// 默认一页显示10条
+	// 默认一页显示 10 条
 	if option.Limit <= 0 {
 		option.Limit = 10
 	}
@@ -43,12 +43,13 @@ func QueryList[T any](model T, option Option) (list []T, count int, err error) {
 		for index, column := range option.Likes {
 			// 第一个模糊匹配和前面的关系是 and 关系，后面的和前面的模糊匹配是 or 的关系
 			if index == 0 {
+				// 这里注意要防止 SQL 注入 -- 最简单的方式就是用 ? 而不是直接字符串拼接
 				likeQuery.Where(fmt.Sprintf("%s like ?", column), fmt.Sprintf("%%%s%%", option.Key))
 			} else {
 				likeQuery.Or(fmt.Sprintf("%s like ?", column), fmt.Sprintf("%%%s%%", option.Key))
 			}
 		}
-		// 整个模糊匹配它是一个整体
+		// 整个模糊匹配是一个整体
 		query = query.Where(likeQuery)
 	}
 

@@ -14,7 +14,7 @@ func HashPwd(pwd string) string {
 	return string(hash)
 }
 
-// CheckPwd 验证密码   hash 之后的密码，需要被验证的密码
+// CheckPwd 验证密码   第一个参数是 hash 之后的密码，第二个参数是u需要被验证的密码
 func CheckPwd(hashedPwd string, pwd string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPwd), []byte(pwd))
 	if err != nil {
