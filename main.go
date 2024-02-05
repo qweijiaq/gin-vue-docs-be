@@ -2,7 +2,7 @@ package main
 
 import (
 	"gvd_server/core"
-	_ "gvd_server/docs"
+	_ "gvd_server/docs" // swag init 生成后的 docs 路径
 	"gvd_server/flags"
 	"gvd_server/global"
 	"gvd_server/routers"

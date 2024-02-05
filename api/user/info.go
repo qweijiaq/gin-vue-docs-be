@@ -9,10 +9,11 @@ import (
 	"gvd_server/utils/jwts"
 )
 
+// UserInfoResponse 用户详情信息接口的响应
 type UserInfoResponse struct {
 	models.UserModel
-	UserName string `json:"userName"`
-	Role     string `json:"role"`
+	Username string `json:"username"` // UserModel 中没有返回 Username (json:"-"), 这里单独返回
+	Role     string `json:"role"`     // 角色
 }
 
 // UserInfoView 用户信息
@@ -40,7 +41,7 @@ func (UserApi) UserInfoView(c *gin.Context) {
 	}
 	info := UserInfoResponse{
 		UserModel: user,
-		UserName:  user.UserName,
+		Username:  user.Username,
 		Role:      user.RoleModel.Title,
 	}
 	response.OKWithData(info, c)

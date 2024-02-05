@@ -26,7 +26,7 @@ func (UserApi) UserLogoutView(c *gin.Context) {
 	exp := claims.ExpiresAt
 	// 距离过期时间还有多久
 	diff := exp.Time.Sub(time.Now())
-	// 设置一个具有过期时间的key，它的过期时间就是token的过期时间
+	// 设置一个具有过期时间的 key，它的过期时间就是 token 的过期时间
 	err := redis.Logout(token, diff)
 	if err != nil {
 		global.Log.Error(err)

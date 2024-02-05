@@ -9,8 +9,9 @@ import (
 	"gvd_server/utils/jwts"
 )
 
+// UserUpdatePasswordRequest 用户更新密码时的输入参数
 type UserUpdatePasswordRequest struct {
-	OldPwd   string `json:"oldPwd" binding:"required" label:"之前的密码"`
+	OldPwd   string `json:"oldPwd" binding:"required" label:"原密码"`
 	Password string `json:"password" binding:"required" label:"新密码"`
 }
 
@@ -36,7 +37,7 @@ func (UserApi) UserUpdatePasswordView(c *gin.Context) {
 	user, err := claims.GetUser()
 	if err != nil {
 		log.Error("用户密码修改失败")
-		log.SetItemInfo("userName", user.UserName)
+		log.SetItemInfo("username", user.Username)
 		log.SetItemErr("失败原因", "该用户不存在")
 		response.FailWithMsg("该用户不存在", c)
 		return
@@ -51,8 +52,7 @@ func (UserApi) UserUpdatePasswordView(c *gin.Context) {
 	global.DB.Model(user).Update("password", hashPwd)
 
 	log.Info("用户密码修改成功")
-	log.SetItemInfo("userName", user.UserName)
+	log.SetItemInfo("userName", user.Username)
 	response.OKWithMsg("用户密码修改成功", c)
 	return
-
 }

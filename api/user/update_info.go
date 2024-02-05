@@ -9,9 +9,10 @@ import (
 	"gvd_server/utils/jwts"
 )
 
+// UserUpdateInfoRequest 用户更新自己的信息时传入的参数
 type UserUpdateInfoRequest struct {
-	NickName string `json:"nickName"`
-	Avatar   string `json:"avatar"`
+	Nickname string `json:"nickname"` // 昵称
+	Avatar   string `json:"avatar"`   // 头像
 }
 
 // UserUpdateInfoView 用户更新自己的信息
@@ -36,7 +37,7 @@ func (UserApi) UserUpdateInfoView(c *gin.Context) {
 	user, err := claims.GetUser()
 	if err != nil {
 		log.Error("用户信息修改失败")
-		log.SetItemInfo("userName", user.UserName)
+		log.SetItemInfo("username", user.Username)
 		log.SetItemErr("失败原因", "该用户不存在")
 		response.FailWithMsg("该用户不存在", c)
 		return
@@ -52,15 +53,14 @@ func (UserApi) UserUpdateInfoView(c *gin.Context) {
 			return
 		}
 	}
-	if !(cr.NickName == "" && cr.Avatar == "") {
+	if !(cr.Nickname == "" && cr.Avatar == "") {
 		global.DB.Model(user).Updates(models.UserModel{
 			Avatar:   cr.Avatar,
-			NickName: cr.NickName,
+			Nickname: cr.Nickname,
 		})
 	}
 	log.Info("用户信息修改成功")
-	log.SetItemInfo("userName", user.UserName)
+	log.SetItemInfo("username", user.Username)
 	response.OKWithMsg("用户信息修改成功", c)
 	return
-
 }
