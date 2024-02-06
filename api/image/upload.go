@@ -15,6 +15,7 @@ import (
 	"time"
 )
 
+// ImageWhiteList 图片白名单列表，即支持上传哪些类型的图片
 var ImageWhiteList = []string{
 	"jpg",
 	"png",
@@ -50,7 +51,7 @@ func (ImageApi) ImageUploadView(c *gin.Context) {
 
 	_claims, _ := c.Get("claims")
 	claims, _ := _claims.(*jwts.CustomClaims)
-	savePath := path.Join("uploads", claims.NickName, fileHeader.Filename)
+	savePath := path.Join("uploads", claims.Nickname, fileHeader.Filename)
 
 	// 白名单判断
 	if !InImageWhiteList(fileHeader.Filename, ImageWhiteList) {
@@ -71,7 +72,7 @@ func (ImageApi) ImageUploadView(c *gin.Context) {
 		return
 	}
 
-	// 计算文件hash
+	// 计算文件 hash
 	file, _ := fileHeader.Open()
 	fileHash := hash.FileMd5(file)
 	// 重复文件判断
@@ -90,7 +91,7 @@ func (ImageApi) ImageUploadView(c *gin.Context) {
 			// 123.png   ->  123_1688054761.png
 			// 12.png.png  ->  12.png_1688054761.png
 			fileHeader.Filename = ReplaceFileName(fileHeader.Filename)
-			savePath = path.Join("uploads", claims.NickName, fileHeader.Filename)
+			savePath = path.Join("uploads", claims.Nickname, fileHeader.Filename)
 		}
 
 		err = c.SaveUploadedFile(fileHeader, savePath)
@@ -150,7 +151,7 @@ func InImageWhiteList(fileName string, whiteList []string) bool {
 }
 
 // ReplaceFileName 修改文件名，加上时间戳
-// 例如, tupian.png -> tupian_1688054761.png
+// 例如, x.png -> x_1688054761.png
 func ReplaceFileName(oldFileName string) string {
 	// 123.png
 	_list := strings.Split(oldFileName, ".")
