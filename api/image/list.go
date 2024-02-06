@@ -7,10 +7,11 @@ import (
 	"gvd_server/service/common/response"
 )
 
+// ImageListResponse 请求图片列表时的响应
 type ImageListResponse struct {
 	models.ImageModel
-	WebPath  string `json:"webPath"`
-	NickName string `json:"nickName"`
+	WebPath  string `json:"webPath"`  // 图片线上路径
+	Nickname string `json:"nickname"` // 上传图片的用户昵称
 }
 
 // ImageListView 图片列表
@@ -30,18 +31,17 @@ func (ImageApi) ImageListView(c *gin.Context) {
 		return
 	}
 	_list, count, _ := list.QueryList(models.ImageModel{}, list.Option{
-		Pagination: cr,
-		Likes:      []string{"fileName"},
-		Preload:    []string{"UserModel"},
+		Pagination: cr,                    // 分页查询
+		Likes:      []string{"fileName"},  // 根据 fileName 模糊查询
+		Preload:    []string{"UserModel"}, // 预加载用户表
 	})
 	var imageList = make([]ImageListResponse, 0)
 	for _, model := range _list {
 		imageList = append(imageList, ImageListResponse{
 			ImageModel: model,
 			WebPath:    model.WebPath(),
-			NickName:   model.UserModel.NickName,
+			Nickname:   model.UserModel.Nickname,
 		})
 	}
 	response.OKWithList(imageList, count, c)
-
 }

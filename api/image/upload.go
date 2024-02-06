@@ -104,7 +104,7 @@ func (ImageApi) ImageUploadView(c *gin.Context) {
 			return
 		}
 	} else {
-		// 有，修改入库的path
+		// 有，修改入库的 path
 		savePath = imageModel.Path
 	}
 	// 使用这个hash对数据库里面记录的图片进行查询
@@ -131,7 +131,6 @@ func (ImageApi) ImageUploadView(c *gin.Context) {
 	log.Info("图片上传成功")
 	log.SetItemInfo("filePath", imageModel.WebPath())
 	response.OK(imageModel.WebPath(), "图片上传成功", c)
-
 }
 
 // InImageWhiteList 判断一个图片是否在白名单中

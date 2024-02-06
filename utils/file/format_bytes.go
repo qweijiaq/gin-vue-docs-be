@@ -12,5 +12,4 @@ func FormatBytes(size int64) string {
 		i++
 	}
 	return fmt.Sprintf("%.2f %s", _size, uints[i])
-
 }
